@@ -148,7 +148,7 @@ INSERT INTO public.users (email, name, role, status, phone, password) VALUES
 ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO public.settings (id, truck_first_trip, truck_additional_trip, helper_base, helper_additional_trip, supervisor_daily, lunch_unit_cost)
-VALUES (1, 270.00, 110.00, 50.00, 25.00, 100.00, 20.00)
+VALUES (1, 450.00, 110.00, 50.00, 25.00, 100.00, 20.00)
 ON CONFLICT (id) DO NOTHING;
 
 
