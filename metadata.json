@@ -1,0 +1,8 @@
+{
+  "name": "TELEMIM MUDANÇAS2",
+  "description": "Sistema completo de gestão de mudanças com otimização de rotas, controle financeiro e acessibilidade.",
+  "requestFramePermissions": [
+    "geolocation",
+    "camera"
+  ]
+}
