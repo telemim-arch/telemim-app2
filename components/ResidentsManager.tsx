@@ -207,7 +207,7 @@ export const ResidentsManager: React.FC<ResidentsManagerProps> = ({
   };
 
   const handleDeleteClick = (id: string, name: string) => {
-    if (window.confirm(`Tem certeza que deseja excluir o morador ${name}?`)) {
+    if (window.confirm(`Tem certeza que deseja excluir o morador ${name}?\n\nISSO APAGARÁ TAMBÉM TODOS OS AGENDAMENTOS DE MUDANÇA DELE.`)) {
       onDeleteResident(id);
     }
   };
