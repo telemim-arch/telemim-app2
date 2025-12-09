@@ -294,9 +294,9 @@ export default function App() {
       setResidents(prev => [created, ...prev]);
       if (user) addLog(user.id, user.name, 'Cadastro', `Novo morador cadastrado: ${created.name}`);
       return created;
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Erro ao cadastrar morador.");
+      alert("Erro ao cadastrar morador: " + (err.message || JSON.stringify(err)));
       throw err;
     }
   };

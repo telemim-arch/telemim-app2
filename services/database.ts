@@ -198,6 +198,7 @@ export const dbService = {
 
     // MOVES
     async createMove(move: MoveRequest) {
+        // Exclude ID to let DB generate UUID
         const dbMove = {
             resident_id: move.residentId,
             resident_name: move.residentName,
@@ -209,13 +210,16 @@ export const dbService = {
             items_volume: move.itemsVolume,
             estimated_cost: move.estimatedCost,
             notes: move.notes,
-            coordinator_id: move.coordinatorId,
-            supervisor_id: move.supervisorId,
-            driver_id: move.driverId,
-            van_id: move.vanId
+            coordinator_id: move.coordinatorId || null,
+            supervisor_id: move.supervisorId || null,
+            driver_id: move.driverId || null,
+            van_id: move.vanId || null
         };
         const { data, error } = await supabase.from('moves').insert(dbMove).select().single();
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase Create Move Error:', error);
+            throw error;
+        }
         return mapMove(data);
     },
     async updateMove(move: MoveRequest) {
@@ -230,10 +234,10 @@ export const dbService = {
             items_volume: move.itemsVolume,
             estimated_cost: move.estimatedCost,
             notes: move.notes,
-            coordinator_id: move.coordinatorId,
-            supervisor_id: move.supervisorId,
-            driver_id: move.driverId,
-            van_id: move.vanId,
+            coordinator_id: move.coordinatorId || null,
+            supervisor_id: move.supervisorId || null,
+            driver_id: move.driverId || null,
+            van_id: move.vanId || null,
             driver_confirmation: move.driverConfirmation,
             van_confirmation: move.vanConfirmation,
             volume_validation_status: move.volumeValidationStatus,
@@ -245,7 +249,7 @@ export const dbService = {
     },
 
     // LOGS
-    async createLog(log: Omit<LogEntry, 'id'>) {
+    async createLog(log: Omit<LogEntry, 'id' | 'timestamp'>) {
         await supabase.from('logs').insert({
             user_id: log.userId,
             user_name: log.userName,
@@ -257,6 +261,10 @@ export const dbService = {
 
     // RESIDENTS
     async createResident(res: Resident) {
+        // Exclude ID to let DB generate UUID
+        // Sanitize 'N/A' dates to null for Postgres
+        const safeLastMoveDate = (res.lastMoveDate === 'N/A' || res.lastMoveDate === '') ? null : res.lastMoveDate;
+
         const { data, error } = await supabase.from('residents').insert({
             name: res.name,
             seal: res.seal,
@@ -271,12 +279,18 @@ export const dbService = {
             destination_city: res.destinationCity,
             notes: res.notes,
             total_moves: res.totalMoves,
-            last_move_date: res.lastMoveDate
+            last_move_date: safeLastMoveDate
         }).select().single();
-        if (error) throw error;
+
+        if (error) {
+            console.error('Supabase Create Resident Error:', error);
+            throw error; // Throwing error so App.tsx can catch and alert it
+        }
         return mapResident(data);
     },
     async updateResident(res: Resident) {
+        const safeLastMoveDate = (res.lastMoveDate === 'N/A' || res.lastMoveDate === '') ? null : res.lastMoveDate;
+
         const { error } = await supabase.from('residents').update({
             name: res.name,
             seal: res.seal,
@@ -291,7 +305,7 @@ export const dbService = {
             destination_city: res.destinationCity,
             notes: res.notes,
             total_moves: res.totalMoves,
-            last_move_date: res.lastMoveDate
+            last_move_date: safeLastMoveDate
         }).eq('id', res.id);
         if (error) throw error;
     },
