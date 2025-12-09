@@ -138,8 +138,10 @@ export interface FinancialRecord {
 export interface FinancialSettings {
   truckFirstTrip: number;    // V_C1
   truckAdditionalTrip: number; // V_CA
+  truckLunch: number;        // V_CL (New)
   helperBase: number;        // V_AB
   helperAdditionalTrip: number; // V_AA
+  helperLunch: number;       // V_AL (New)
   supervisorDaily: number;   // V_SD
   lunchUnitCost: number;     // V_UA
   vanDaily: number;          // V_VD

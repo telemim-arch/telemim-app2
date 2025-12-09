@@ -267,6 +267,15 @@ export const FinancialManager: React.FC<FinancialManagerProps> = ({
                     className="w-full p-2 border border-gray-300 rounded bg-white text-gray-900"
                   />
                 </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Auxílio Almoço (V_CL)</label>
+                  <input
+                    type="number" step="0.01" required
+                    value={settingsForm.truckLunch}
+                    onChange={e => setSettingsForm(prev => ({ ...prev, truckLunch: parseFloat(e.target.value) }))}
+                    className="w-full p-2 border border-gray-300 rounded bg-white text-gray-900"
+                  />
+                </div>
               </div>
             </div>
 
@@ -288,6 +297,15 @@ export const FinancialManager: React.FC<FinancialManagerProps> = ({
                     type="number" step="0.01" required
                     value={settingsForm.helperAdditionalTrip}
                     onChange={e => setSettingsForm(prev => ({ ...prev, helperAdditionalTrip: parseFloat(e.target.value) }))}
+                    className="w-full p-2 border border-gray-300 rounded bg-white text-gray-900"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Auxílio Almoço (V_AL)</label>
+                  <input
+                    type="number" step="0.01" required
+                    value={settingsForm.helperLunch}
+                    onChange={e => setSettingsForm(prev => ({ ...prev, helperLunch: parseFloat(e.target.value) }))}
                     className="w-full p-2 border border-gray-300 rounded bg-white text-gray-900"
                   />
                 </div>

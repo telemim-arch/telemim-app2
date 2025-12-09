@@ -128,8 +128,10 @@ const mapLog = (l: any): LogEntry => ({
 const mapSettings = (s: any): FinancialSettings => ({
     truckFirstTrip: Number(s.truck_first_trip),
     truckAdditionalTrip: Number(s.truck_additional_trip),
+    truckLunch: Number(s.truck_lunch || 0),
     helperBase: Number(s.helper_base),
     helperAdditionalTrip: Number(s.helper_additional_trip),
+    helperLunch: Number(s.helper_lunch || 0),
     supervisorDaily: Number(s.supervisor_daily),
     lunchUnitCost: Number(s.lunch_unit_cost),
     vanDaily: Number(s.van_daily || 0),
@@ -393,8 +395,10 @@ export const dbService = {
         await supabase.from('settings').update({
             truck_first_trip: s.truckFirstTrip,
             truck_additional_trip: s.truckAdditionalTrip,
+            truck_lunch: s.truckLunch,
             helper_base: s.helperBase,
             helper_additional_trip: s.helperAdditionalTrip,
+            helper_lunch: s.helperLunch,
             supervisor_daily: s.supervisorDaily,
             lunch_unit_cost: s.lunchUnitCost,
             van_daily: s.vanDaily,
