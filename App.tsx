@@ -781,6 +781,7 @@ const NotificationsView = ({ notifications, onMarkRead, onMarkAllRead }: { notif
 );
 
 const LoginScreen = ({ onLogin, users }: { onLogin: (email: string, password: string) => void, users: User[] }) => {
+  // Login Screen Component
   const [email, setEmail] = useState('admin@telemim.com');
   const [password, setPassword] = useState('123');
 
@@ -810,20 +811,7 @@ const LoginScreen = ({ onLogin, users }: { onLogin: (email: string, password: st
             Entrar no Sistema
           </button>
         </form>
-        <div className="mt-6">
-          <p className="text-center text-xs text-gray-400 mb-2">Usuários Disponíveis (Do Banco de Dados):</p>
-          {users.length === 0 ? (
-            <p className="text-center text-xs text-orange-500">Nenhum usuário carregado. Banco vazio ou erro de conexão.</p>
-          ) : (
-            <div className="flex flex-wrap gap-2 justify-center">
-              {users.slice(0, 3).map(u => (
-                <button key={u.id} onClick={() => { setEmail(u.email); setPassword('123'); }} className="text-xs bg-gray-100 px-2 py-1 rounded hover:bg-gray-200 text-gray-600">
-                  {u.role}: {u.name}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+
       </div>
     </div>
   );
