@@ -341,9 +341,9 @@ export default function App() {
       await dbService.deleteUser(id);
       setEmployees(prev => prev.filter(e => e.id !== id));
       if (user) addLog(user.id, user.name, 'RH', `Funcionário demitido/removido ID: ${id}`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Erro ao excluir funcionário.");
+      alert("Erro ao excluir funcionário: " + (err.message || JSON.stringify(err)));
     }
   };
 

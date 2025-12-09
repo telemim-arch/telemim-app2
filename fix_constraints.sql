@@ -54,3 +54,13 @@ ADD CONSTRAINT notifications_user_id_fkey
 FOREIGN KEY (user_id)
 REFERENCES public.users(id)
 ON DELETE CASCADE;
+
+-- 5. Attendance references (Keep attendance even if recorder is deleted)
+ALTER TABLE public.attendance
+DROP CONSTRAINT IF EXISTS attendance_recorded_by_fkey;
+
+ALTER TABLE public.attendance
+ADD CONSTRAINT attendance_recorded_by_fkey
+FOREIGN KEY (recorded_by)
+REFERENCES public.users(id)
+ON DELETE SET NULL;
