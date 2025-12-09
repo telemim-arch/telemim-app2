@@ -318,19 +318,20 @@ export const ResidentsManager: React.FC<ResidentsManagerProps> = ({
               )}
             </div>
 
-            {resident.seal && resident.seal !== 'S/N' && (
-              <div className="absolute top-4 right-4 bg-yellow-100 text-yellow-800 text-xs font-bold px-2 py-1 rounded flex items-center gap-1 group-hover:opacity-0 transition-opacity">
-                <Tag size={12} /> {resident.seal}
-              </div>
-            )}
-
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-indigo-50 rounded-full flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                   <UserIcon size={24} />
                 </div>
                 <div>
-                  <h3 className="font-black text-gray-800 uppercase tracking-wide">{resident.name}</h3>
+                  <h3 className="font-black text-gray-800 uppercase tracking-wide flex items-center gap-2">
+                    {resident.name}
+                    {resident.seal && resident.seal !== 'S/N' && (
+                      <span className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-0.5 rounded border border-yellow-200">
+                        {resident.seal}
+                      </span>
+                    )}
+                  </h3>
                   <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
                     <Phone size={12} /> {resident.phone || 'NÃO INFORMADO'}
                   </div>
@@ -372,366 +373,371 @@ export const ResidentsManager: React.FC<ResidentsManagerProps> = ({
               )}
             </div>
           </div>
-        ))}
+        ))
+        }
 
-        {filteredResidents.length === 0 && (
-          <div className="col-span-full text-center py-10 text-gray-400 uppercase">
-            Nenhum morador encontrado com os filtros atuais.
-          </div>
-        )}
-      </div>
+        {
+          filteredResidents.length === 0 && (
+            <div className="col-span-full text-center py-10 text-gray-400 uppercase">
+              Nenhum morador encontrado com os filtros atuais.
+            </div>
+          )
+        }
+      </div >
 
       {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[95vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden">
-            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl shrink-0">
-              <div>
-                <h3 className="text-xl font-bold text-gray-800 uppercase">{editingId ? 'Editar Morador' : 'Cadastro de Morador'}</h3>
-                <p className="text-xs text-gray-500">Preencha os dados pessoais e endereços</p>
-              </div>
-              <button
-                type="button"
-                onClick={handleCloseModal}
-                className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-gray-100 rounded-full"
-              >
-                <X size={24} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
-              <div className="p-6 space-y-8 overflow-y-auto flex-1">
-
-                {/* Identificação */}
-                <section>
-                  <h4 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase">
-                    <UserIcon size={16} className="text-blue-600" /> Dados Pessoais
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="md:col-span-1">
-                      <label htmlFor="seal" className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Selo / ID (Opcional)</label>
-                      <input
-                        type="text"
-                        id="seal"
-                        name="seal"
-                        value={formData.seal}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="EX: A-102"
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="md:col-span-2">
-                      <label htmlFor="name" className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Nome Completo *</label>
-                      <input
-                        type="text"
-                        id="name"
-                        required
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="NOME DO RESPONSÁVEL"
-                        autoComplete="off"
-                      />
-                    </div>
-                    <div className="md:col-span-1">
-                      <label htmlFor="phone" className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Telefone (Opcional)</label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className={inputClass}
-                        placeholder="(00) 90000-0000"
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-                </section>
-
-                {/* Endereços */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                  {/* ORIGEM */}
-                  <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
-                        <span className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-gray-600 text-xs">1</span>
-                        Origem
-                      </h4>
-                      <MapPin className="text-gray-300" size={20} />
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-4 gap-3">
-                        <div className="col-span-3">
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Endereço (Rua/Av) *</label>
-                          <input
-                            type="text"
-                            required
-                            name="originStreet"
-                            value={formData.originStreet}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="EX: RUA DAS FLORES"
-                            autoComplete="off"
-                          />
-                        </div>
-                        <div className="col-span-1">
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Número *</label>
-                          <input
-                            type="text"
-                            required
-                            name="originNumber"
-                            value={formData.originNumber}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="123"
-                            autoComplete="off"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Bairro *</label>
-                          <input
-                            type="text"
-                            required
-                            name="originNeighborhood"
-                            value={formData.originNeighborhood}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="EX: CENTRO"
-                            autoComplete="off"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Cidade *</label>
-                          <input
-                            type="text"
-                            required
-                            name="originCity"
-                            value={formData.originCity}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="EX: SÃO PAULO"
-                            autoComplete="off"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* DESTINO */}
-                  <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-sm font-bold text-blue-800 uppercase tracking-wider flex items-center gap-2">
-                        <span className="w-6 h-6 rounded bg-blue-200 flex items-center justify-center text-blue-700 text-xs">2</span>
-                        Destino
-                      </h4>
-                      <MapPin className="text-blue-300" size={20} />
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-4 gap-3">
-                        <div className="col-span-3">
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Endereço (Rua/Av) *</label>
-                          <input
-                            type="text"
-                            required
-                            name="destinationStreet"
-                            value={formData.destinationStreet}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="EX: AV. BRASIL"
-                            autoComplete="off"
-                          />
-                        </div>
-                        <div className="col-span-1">
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Número *</label>
-                          <input
-                            type="text"
-                            required
-                            name="destinationNumber"
-                            value={formData.destinationNumber}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="500"
-                            autoComplete="off"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Bairro *</label>
-                          <input
-                            type="text"
-                            required
-                            name="destinationNeighborhood"
-                            value={formData.destinationNeighborhood}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="EX: JARDINS"
-                            autoComplete="off"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Cidade *</label>
-                          <input
-                            type="text"
-                            required
-                            name="destinationCity"
-                            value={formData.destinationCity}
-                            onChange={handleChange}
-                            className={inputClass}
-                            placeholder="EX: CAMPINAS"
-                            autoComplete="off"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+      {
+        isModalOpen && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[95vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden">
+              <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-2xl shrink-0">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-800 uppercase">{editingId ? 'Editar Morador' : 'Cadastro de Morador'}</h3>
+                  <p className="text-xs text-gray-500">Preencha os dados pessoais e endereços</p>
                 </div>
-
-                {/* Scheduling Section - Only for New Residents */}
-                {!editingId && (
-                  <div className="bg-orange-50 p-5 rounded-xl border border-orange-100">
-                    <h4 className="text-sm font-bold text-orange-800 mb-4 flex items-center gap-2 uppercase">
-                      <Calendar size={18} className="text-orange-600" /> Agendamento Inicial (Opcional)
-                    </h4>
-                    <p className="text-xs text-gray-600 mb-3">
-                      Deseja já criar a Ordem de Serviço para este morador? Preencha abaixo.
-                    </p>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Data da Mudança</label>
-                        <input
-                          type="date"
-                          name="scheduleDate"
-                          value={formData.scheduleDate}
-                          onChange={handleChange}
-                          className={inputClass}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Horário</label>
-                        <input
-                          type="time"
-                          name="scheduleTime"
-                          value={formData.scheduleTime}
-                          onChange={handleChange}
-                          className={inputClass}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Coordenador Responsável</label>
-                        <select
-                          name="coordinatorId"
-                          value={formData.coordinatorId}
-                          onChange={handleChange}
-                          className={inputClass}
-                        >
-                          <option value="">SELECIONE...</option>
-                          {coordinators.map(c => (
-                            <option key={c.id} value={c.id}>{c.name}</option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Extras & AI */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2 uppercase">Observações Adicionais</label>
-                    <textarea
-                      name="notes"
-                      value={formData.notes}
-                      onChange={handleChange}
-                      rows={4}
-                      className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none bg-gray-50 focus:bg-white text-gray-900 uppercase"
-                      placeholder="INFORMAÇÕES SOBRE RESTRIÇÕES DE HORÁRIO, ITENS FRÁGEIS, ETC..."
-                    />
-                  </div>
-
-                  <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 flex flex-col justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="text-sm font-bold text-indigo-900 flex items-center gap-2 uppercase">
-                          <Navigation size={18} /> Otimização de Rota (IA)
-                        </h4>
-                        {!routeInfo && (
-                          <button
-                            type="button"
-                            onClick={handleCalculateRoute}
-                            disabled={calculatingRoute}
-                            className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm uppercase"
-                          >
-                            {calculatingRoute ? 'Calculando...' : 'Calcular Estimativa'}
-                          </button>
-                        )}
-                      </div>
-                      <p className="text-xs text-gray-600 mb-3">
-                        O sistema calculará automaticamente a distância e tempo baseando-se nos endereços inseridos.
-                      </p>
-                    </div>
-
-                    {routeInfo && (
-                      <div className="bg-white p-3 rounded-lg border border-indigo-100 shadow-sm animate-fade-in space-y-3">
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="text-center">
-                            <Clock size={16} className="text-blue-500 mx-auto mb-1" />
-                            <span className="block text-sm font-bold text-gray-800 uppercase">{routeInfo.duration}</span>
-                          </div>
-                          <div className="text-center border-l border-gray-100">
-                            <Navigation size={16} className="text-green-500 mx-auto mb-1" />
-                            <span className="block text-sm font-bold text-gray-800 uppercase">{routeInfo.distance}</span>
-                          </div>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={openGoogleMaps}
-                          className="w-full flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 p-2 rounded-lg text-xs font-bold transition-colors border border-green-200 uppercase"
-                        >
-                          <ExternalLink size={12} />
-                          Ver rota no Google Maps
-                        </button>
-
-                        <div className="pt-2 border-t border-gray-100 text-[10px] text-gray-500 flex items-center gap-1 justify-center uppercase">
-                          <CheckCircle size={10} className="text-green-500" /> Estimativa calculada com sucesso
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 p-6 border-t border-gray-100 bg-white shrink-0">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-6 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium uppercase"
+                  className="text-gray-400 hover:text-red-500 transition-colors p-2 hover:bg-gray-100 rounded-full"
                 >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-8 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 flex items-center gap-2 uppercase"
-                >
-                  <CheckCircle size={18} />
-                  {editingId ? 'Salvar Alterações' : 'Salvar Cadastro'}
+                  <X size={24} />
                 </button>
               </div>
-            </form>
+
+              <form onSubmit={handleSubmit} className="flex flex-col h-full overflow-hidden">
+                <div className="p-6 space-y-8 overflow-y-auto flex-1">
+
+                  {/* Identificação */}
+                  <section>
+                    <h4 className="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2 border-b border-gray-100 pb-2 uppercase">
+                      <UserIcon size={16} className="text-blue-600" /> Dados Pessoais
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="md:col-span-1">
+                        <label htmlFor="seal" className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Selo / ID (Opcional)</label>
+                        <input
+                          type="text"
+                          id="seal"
+                          name="seal"
+                          value={formData.seal}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="EX: A-102"
+                          autoComplete="off"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label htmlFor="name" className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Nome Completo *</label>
+                        <input
+                          type="text"
+                          id="name"
+                          required
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="NOME DO RESPONSÁVEL"
+                          autoComplete="off"
+                        />
+                      </div>
+                      <div className="md:col-span-1">
+                        <label htmlFor="phone" className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Telefone (Opcional)</label>
+                        <input
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          value={formData.phone}
+                          onChange={handleChange}
+                          className={inputClass}
+                          placeholder="(00) 90000-0000"
+                          autoComplete="off"
+                        />
+                      </div>
+                    </div>
+                  </section>
+
+                  {/* Endereços */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    {/* ORIGEM */}
+                    <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+                          <span className="w-6 h-6 rounded bg-gray-200 flex items-center justify-center text-gray-600 text-xs">1</span>
+                          Origem
+                        </h4>
+                        <MapPin className="text-gray-300" size={20} />
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-4 gap-3">
+                          <div className="col-span-3">
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Endereço (Rua/Av) *</label>
+                            <input
+                              type="text"
+                              required
+                              name="originStreet"
+                              value={formData.originStreet}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="EX: RUA DAS FLORES"
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-span-1">
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Número *</label>
+                            <input
+                              type="text"
+                              required
+                              name="originNumber"
+                              value={formData.originNumber}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="123"
+                              autoComplete="off"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Bairro *</label>
+                            <input
+                              type="text"
+                              required
+                              name="originNeighborhood"
+                              value={formData.originNeighborhood}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="EX: CENTRO"
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Cidade *</label>
+                            <input
+                              type="text"
+                              required
+                              name="originCity"
+                              value={formData.originCity}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="EX: SÃO PAULO"
+                              autoComplete="off"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* DESTINO */}
+                    <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
+                      <div className="flex justify-between items-center mb-4">
+                        <h4 className="text-sm font-bold text-blue-800 uppercase tracking-wider flex items-center gap-2">
+                          <span className="w-6 h-6 rounded bg-blue-200 flex items-center justify-center text-blue-700 text-xs">2</span>
+                          Destino
+                        </h4>
+                        <MapPin className="text-blue-300" size={20} />
+                      </div>
+
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-4 gap-3">
+                          <div className="col-span-3">
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Endereço (Rua/Av) *</label>
+                            <input
+                              type="text"
+                              required
+                              name="destinationStreet"
+                              value={formData.destinationStreet}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="EX: AV. BRASIL"
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div className="col-span-1">
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Número *</label>
+                            <input
+                              type="text"
+                              required
+                              name="destinationNumber"
+                              value={formData.destinationNumber}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="500"
+                              autoComplete="off"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Bairro *</label>
+                            <input
+                              type="text"
+                              required
+                              name="destinationNeighborhood"
+                              value={formData.destinationNeighborhood}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="EX: JARDINS"
+                              autoComplete="off"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Cidade *</label>
+                            <input
+                              type="text"
+                              required
+                              name="destinationCity"
+                              value={formData.destinationCity}
+                              onChange={handleChange}
+                              className={inputClass}
+                              placeholder="EX: CAMPINAS"
+                              autoComplete="off"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Scheduling Section - Only for New Residents */}
+                  {!editingId && (
+                    <div className="bg-orange-50 p-5 rounded-xl border border-orange-100">
+                      <h4 className="text-sm font-bold text-orange-800 mb-4 flex items-center gap-2 uppercase">
+                        <Calendar size={18} className="text-orange-600" /> Agendamento Inicial (Opcional)
+                      </h4>
+                      <p className="text-xs text-gray-600 mb-3">
+                        Deseja já criar a Ordem de Serviço para este morador? Preencha abaixo.
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Data da Mudança</label>
+                          <input
+                            type="date"
+                            name="scheduleDate"
+                            value={formData.scheduleDate}
+                            onChange={handleChange}
+                            className={inputClass}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Horário</label>
+                          <input
+                            type="time"
+                            name="scheduleTime"
+                            value={formData.scheduleTime}
+                            onChange={handleChange}
+                            className={inputClass}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-semibold text-gray-600 mb-1 uppercase">Coordenador Responsável</label>
+                          <select
+                            name="coordinatorId"
+                            value={formData.coordinatorId}
+                            onChange={handleChange}
+                            className={inputClass}
+                          >
+                            <option value="">SELECIONE...</option>
+                            {coordinators.map(c => (
+                              <option key={c.id} value={c.id}>{c.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Extras & AI */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2 uppercase">Observações Adicionais</label>
+                      <textarea
+                        name="notes"
+                        value={formData.notes}
+                        onChange={handleChange}
+                        rows={4}
+                        className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm resize-none bg-gray-50 focus:bg-white text-gray-900 uppercase"
+                        placeholder="INFORMAÇÕES SOBRE RESTRIÇÕES DE HORÁRIO, ITENS FRÁGEIS, ETC..."
+                      />
+                    </div>
+
+                    <div className="bg-indigo-50 p-5 rounded-xl border border-indigo-100 flex flex-col justify-between">
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="text-sm font-bold text-indigo-900 flex items-center gap-2 uppercase">
+                            <Navigation size={18} /> Otimização de Rota (IA)
+                          </h4>
+                          {!routeInfo && (
+                            <button
+                              type="button"
+                              onClick={handleCalculateRoute}
+                              disabled={calculatingRoute}
+                              className="text-xs bg-indigo-600 text-white px-3 py-1.5 rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors shadow-sm uppercase"
+                            >
+                              {calculatingRoute ? 'Calculando...' : 'Calcular Estimativa'}
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-600 mb-3">
+                          O sistema calculará automaticamente a distância e tempo baseando-se nos endereços inseridos.
+                        </p>
+                      </div>
+
+                      {routeInfo && (
+                        <div className="bg-white p-3 rounded-lg border border-indigo-100 shadow-sm animate-fade-in space-y-3">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="text-center">
+                              <Clock size={16} className="text-blue-500 mx-auto mb-1" />
+                              <span className="block text-sm font-bold text-gray-800 uppercase">{routeInfo.duration}</span>
+                            </div>
+                            <div className="text-center border-l border-gray-100">
+                              <Navigation size={16} className="text-green-500 mx-auto mb-1" />
+                              <span className="block text-sm font-bold text-gray-800 uppercase">{routeInfo.distance}</span>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={openGoogleMaps}
+                            className="w-full flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-100 p-2 rounded-lg text-xs font-bold transition-colors border border-green-200 uppercase"
+                          >
+                            <ExternalLink size={12} />
+                            Ver rota no Google Maps
+                          </button>
+
+                          <div className="pt-2 border-t border-gray-100 text-[10px] text-gray-500 flex items-center gap-1 justify-center uppercase">
+                            <CheckCircle size={10} className="text-green-500" /> Estimativa calculada com sucesso
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-3 p-6 border-t border-gray-100 bg-white shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="px-6 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium uppercase"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-8 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-lg shadow-blue-200 flex items-center gap-2 uppercase"
+                  >
+                    <CheckCircle size={18} />
+                    {editingId ? 'Salvar Alterações' : 'Salvar Cadastro'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
