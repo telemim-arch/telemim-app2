@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { 
+import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer
 } from 'recharts';
 import { MoveRequest, MoveStatus, UserRole, Helper, AttendanceRecord, User } from '../types';
@@ -15,18 +15,18 @@ interface DashboardProps {
   currentUser: User;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ 
-  moves, onNavigate, userRole, helpers, attendanceRecords, currentUser 
+export const Dashboard: React.FC<DashboardProps> = ({
+  moves, onNavigate, userRole, helpers, attendanceRecords, currentUser
 }) => {
-  
+
   // 1. Filter moves based on User Role ("My Moves" vs "All Moves")
   const relevantMoves = React.useMemo(() => {
     if (userRole === UserRole.ADMIN) {
       return moves;
     }
-    return moves.filter(m => 
-      m.coordinatorId === currentUser.id || 
-      m.supervisorId === currentUser.id || 
+    return moves.filter(m =>
+      m.coordinatorId === currentUser.id ||
+      m.supervisorId === currentUser.id ||
       m.driverId === currentUser.id ||
       m.vanId === currentUser.id
     );
@@ -35,20 +35,41 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // 2. Filter moves for TODAY (Day of Access)
   const today = new Date();
   const todayStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
-  
+
   const todaysMoves = relevantMoves.filter(m => m.date === todayStr);
 
   // Volume Data for Admin View
-  const volumeData = [
-    { name: 'Sem 1', value: 12 },
-    { name: 'Sem 2', value: 19 },
-    { name: 'Sem 3', value: 15 },
-    { name: 'Sem 4', value: 22 },
-  ];
+  // Volume Data for Admin View (Current Month by Weeks)
+  const volumeData = React.useMemo(() => {
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+
+    // Initialize 5 weeks
+    const weeks = [0, 0, 0, 0, 0];
+
+    relevantMoves.forEach(m => {
+      const d = new Date(m.date + 'T12:00:00'); // Fix timezone offset
+      if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+        const day = d.getDate();
+        const weekIndex = Math.floor((day - 1) / 7);
+        if (weekIndex >= 0 && weekIndex < 5) {
+          weeks[weekIndex]++;
+        }
+      }
+    });
+
+    return [
+      { name: 'Sem 1', value: weeks[0] },
+      { name: 'Sem 2', value: weeks[1] },
+      { name: 'Sem 3', value: weeks[2] },
+      { name: 'Sem 4', value: weeks[3] },
+      { name: 'Sem 5', value: weeks[4] },
+    ].filter(w => w.value > 0 || w.name !== 'Sem 5'); // Hide Sem 5 if empty
+  }, [relevantMoves]);
 
   // 3. Calculate KPIs based on RELEVANT moves
   const totalTodayMoves = todaysMoves.length;
-  
+
   // Split Pending into Today vs Others
   const allPendingMoves = relevantMoves.filter(m => m.status === MoveStatus.PENDING);
   const pendingToday = allPendingMoves.filter(m => m.date === todayStr).length;
@@ -73,9 +94,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* KPI Cards - Expanded to 6 columns for new card */}
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
-        
+
         {/* 1. Total Hoje */}
-        <div 
+        <div
           onClick={() => onNavigate && onNavigate('moves', 'ALL')}
           className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-all group"
         >
@@ -89,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* 2. Pendentes HOJE -> Renamed to Esperando Aprovação */}
-        <div 
+        <div
           onClick={() => onNavigate && onNavigate('moves', MoveStatus.PENDING)}
           className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-all group"
         >
@@ -103,7 +124,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* 3. Aprovadas */}
-        <div 
+        <div
           onClick={() => onNavigate && onNavigate('moves', MoveStatus.APPROVED)}
           className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-all group"
         >
@@ -117,7 +138,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* 4. Em Andamento */}
-        <div 
+        <div
           onClick={() => onNavigate && onNavigate('moves', MoveStatus.IN_PROGRESS)}
           className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-all group"
         >
@@ -131,7 +152,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* 5. Concluídas */}
-        <div 
+        <div
           onClick={() => onNavigate && onNavigate('moves', MoveStatus.COMPLETED)}
           className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-all group"
         >
@@ -145,7 +166,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* 6. Pendentes OUTROS (Reordered & Color Changed) */}
-        <div 
+        <div
           onClick={() => onNavigate && onNavigate('moves', MoveStatus.PENDING)}
           className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between cursor-pointer hover:shadow-md transition-all group"
         >
@@ -162,94 +183,94 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Main Grid: Attendance (Large) vs Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* ATTENDANCE LIST (Replaces Status Pie Chart) - ONLY VISIBLE TO SUPERVISOR */}
         {userRole === UserRole.SUPERVISOR ? (
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col h-full animate-fade-in">
             <div className="flex justify-between items-center mb-4">
-               <div>
-                  <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 uppercase">
-                    <HardHat className="text-blue-600"/> Lista de Presença de Hoje
-                  </h3>
-                  <p className="text-xs text-gray-500">Controle diário de ajudantes</p>
-               </div>
-               <button 
-                  onClick={() => onNavigate && onNavigate('helpers')}
-                  className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium transition-colors uppercase"
-               >
-                  Gerenciar
-               </button>
+              <div>
+                <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2 uppercase">
+                  <HardHat className="text-blue-600" /> Lista de Presença de Hoje
+                </h3>
+                <p className="text-xs text-gray-500">Controle diário de ajudantes</p>
+              </div>
+              <button
+                onClick={() => onNavigate && onNavigate('helpers')}
+                className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium transition-colors uppercase"
+              >
+                Gerenciar
+              </button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto max-h-[300px] pr-2 space-y-2">
-               {activeHelpers.length > 0 ? (
-                 activeHelpers.map(helper => {
-                   const record = todaysAttendance.find(r => r.helperId === helper.id);
-                   const hasRecord = !!record;
-                   const isPresent = record?.isPresent;
-                   
-                   return (
-                      <div key={helper.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-50 bg-gray-50/50">
-                          <div className="flex items-center gap-3">
-                             <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${hasRecord ? (isPresent ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') : 'bg-gray-200 text-gray-500'}`}>
-                                {helper.name.charAt(0)}
-                             </div>
-                             <div>
-                                <p className="text-sm font-semibold text-gray-800 uppercase">{helper.name}</p>
-                                {hasRecord && (
-                                  <p className="text-[10px] text-gray-400 uppercase">
-                                     Reg. por: {record?.recordedByName}
-                                  </p>
-                                )}
-                             </div>
-                          </div>
-                          
-                          <div>
-                             {hasRecord ? (
-                                isPresent ? (
-                                  <span className="flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded uppercase">
-                                     <CheckCircle size={12}/> Presente
-                                  </span>
-                                ) : (
-                                  <span className="flex items-center gap-1 text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded uppercase">
-                                     <XCircle size={12}/> Falta
-                                  </span>
-                                )
-                             ) : (
-                                <span className="text-xs text-gray-400 italic bg-gray-100 px-2 py-1 rounded uppercase">
-                                   Pendente
-                                </span>
-                             )}
-                          </div>
+              {activeHelpers.length > 0 ? (
+                activeHelpers.map(helper => {
+                  const record = todaysAttendance.find(r => r.helperId === helper.id);
+                  const hasRecord = !!record;
+                  const isPresent = record?.isPresent;
+
+                  return (
+                    <div key={helper.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-50 bg-gray-50/50">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${hasRecord ? (isPresent ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700') : 'bg-gray-200 text-gray-500'}`}>
+                          {helper.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-gray-800 uppercase">{helper.name}</p>
+                          {hasRecord && (
+                            <p className="text-[10px] text-gray-400 uppercase">
+                              Reg. por: {record?.recordedByName}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                   );
-                 })
-               ) : (
-                 <div className="h-full flex flex-col items-center justify-center text-gray-400 text-sm uppercase">
-                    <Users size={32} className="mb-2 opacity-20"/>
-                    Nenhum ajudante ativo cadastrado.
-                 </div>
-               )}
+
+                      <div>
+                        {hasRecord ? (
+                          isPresent ? (
+                            <span className="flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded uppercase">
+                              <CheckCircle size={12} /> Presente
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-1 text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded uppercase">
+                              <XCircle size={12} /> Falta
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-xs text-gray-400 italic bg-gray-100 px-2 py-1 rounded uppercase">
+                            Pendente
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="h-full flex flex-col items-center justify-center text-gray-400 text-sm uppercase">
+                  <Users size={32} className="mb-2 opacity-20" />
+                  Nenhum ajudante ativo cadastrado.
+                </div>
+              )}
             </div>
-            
+
             <div className="mt-4 pt-4 border-t border-gray-50 grid grid-cols-2 gap-4 text-center">
-               <div className="bg-green-50 rounded-lg p-2">
-                  <span className="block text-xl font-bold text-green-600">{todaysAttendance.filter(r => r.isPresent).length}</span>
-                  <span className="text-xs text-green-800 uppercase font-bold">Presentes</span>
-               </div>
-               <div className="bg-red-50 rounded-lg p-2">
-                  <span className="block text-xl font-bold text-red-500">{todaysAttendance.filter(r => !r.isPresent).length}</span>
-                  <span className="text-xs text-red-800 uppercase font-bold">Faltas</span>
-               </div>
+              <div className="bg-green-50 rounded-lg p-2">
+                <span className="block text-xl font-bold text-green-600">{todaysAttendance.filter(r => r.isPresent).length}</span>
+                <span className="text-xs text-green-800 uppercase font-bold">Presentes</span>
+              </div>
+              <div className="bg-red-50 rounded-lg p-2">
+                <span className="block text-xl font-bold text-red-500">{todaysAttendance.filter(r => !r.isPresent).length}</span>
+                <span className="text-xs text-red-800 uppercase font-bold">Faltas</span>
+              </div>
             </div>
           </div>
         ) : (
           /* Placeholder for non-supervisors to maintain grid layout or show something else */
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center">
-             <div className="text-center text-gray-400">
-                <Truck size={48} className="mx-auto mb-2 opacity-20" />
-                <p className="text-sm uppercase">Selecione uma opção no menu para começar</p>
-             </div>
+            <div className="text-center text-gray-400">
+              <Truck size={48} className="mx-auto mb-2 opacity-20" />
+              <p className="text-sm uppercase">Selecione uma opção no menu para começar</p>
+            </div>
           </div>
         )}
 
@@ -263,7 +284,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} />
                   <YAxis axisLine={false} tickLine={false} />
-                  <RechartsTooltip cursor={{fill: '#f3f4f6'}} />
+                  <RechartsTooltip cursor={{ fill: '#f3f4f6' }} />
                   <Bar dataKey="value" fill="#4f46e5" radius={[4, 4, 0, 0]} name="Volume" />
                 </BarChart>
               </ResponsiveContainer>

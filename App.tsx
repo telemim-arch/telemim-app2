@@ -796,7 +796,7 @@ const LoginScreen = ({ onLogin, users }: { onLogin: (email: string, password: st
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-blue-600 rounded-xl mx-auto flex items-center justify-center text-white font-bold text-2xl mb-4 shadow-lg shadow-blue-200">T</div>
           <h1 className="text-2xl font-bold text-gray-800">TELEMIM MUDANÇAS</h1>
-          <p className="text-gray-500 mt-2">Faça login para gerenciar operações</p>
+          <p className="text-gray-500 mt-2">Faça login para gerenciar operações (v1.1)</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
