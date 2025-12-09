@@ -293,7 +293,12 @@ export default function App() {
       const created = await dbService.createResident({ ...newResident, createdAt: new Date().toISOString() });
       setResidents(prev => [created, ...prev]);
       if (user) addLog(user.id, user.name, 'Cadastro', `Novo morador cadastrado: ${created.name}`);
-    } catch (err) { console.error(err); alert("Erro ao cadastrar morador."); }
+      return created;
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao cadastrar morador.");
+      throw err;
+    }
   };
 
   const handleUpdateResident = async (updatedResident: Resident) => {
@@ -684,8 +689,8 @@ const NavItem = ({ icon, label, active, onClick, badge }: any) => (
   <button
     onClick={onClick}
     className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all relative ${active
-        ? 'bg-blue-50 text-blue-700 shadow-sm'
-        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+      ? 'bg-blue-50 text-blue-700 shadow-sm'
+      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
       }`}
   >
     <span className={`${active ? 'text-blue-600' : 'text-gray-400'}`}>{icon}</span>
