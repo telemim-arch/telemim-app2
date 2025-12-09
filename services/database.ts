@@ -131,7 +131,9 @@ const mapSettings = (s: any): FinancialSettings => ({
     helperBase: Number(s.helper_base),
     helperAdditionalTrip: Number(s.helper_additional_trip),
     supervisorDaily: Number(s.supervisor_daily),
-    lunchUnitCost: Number(s.lunch_unit_cost)
+    lunchUnitCost: Number(s.lunch_unit_cost),
+    vanDaily: Number(s.van_daily || 0),
+    vanLunch: Number(s.van_lunch || 0)
 });
 
 export const dbService = {
@@ -394,7 +396,9 @@ export const dbService = {
             helper_base: s.helperBase,
             helper_additional_trip: s.helperAdditionalTrip,
             supervisor_daily: s.supervisorDaily,
-            lunch_unit_cost: s.lunchUnitCost
+            lunch_unit_cost: s.lunchUnitCost,
+            van_daily: s.vanDaily,
+            van_lunch: s.vanLunch
         }).eq('id', 1);
     },
 

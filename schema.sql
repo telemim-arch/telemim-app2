@@ -136,6 +136,8 @@ create table if not exists public.settings (
   helper_additional_trip numeric,
   supervisor_daily numeric,
   lunch_unit_cost numeric,
+  van_daily numeric default 0,
+  van_lunch numeric default 0,
   constraint single_row check (id = 1)
 );
 
@@ -147,8 +149,8 @@ INSERT INTO public.users (email, name, role, status, phone, password) VALUES
 ('marcos@telemim.com', 'Marcos Supervisor', 'Supervisor', 'Ativo', '(11) 96666-4000', '123')
 ON CONFLICT (email) DO NOTHING;
 
-INSERT INTO public.settings (id, truck_first_trip, truck_additional_trip, helper_base, helper_additional_trip, supervisor_daily, lunch_unit_cost)
-VALUES (1, 450.00, 110.00, 50.00, 25.00, 100.00, 20.00)
+INSERT INTO public.settings (id, truck_first_trip, truck_additional_trip, helper_base, helper_additional_trip, supervisor_daily, lunch_unit_cost, van_daily, van_lunch)
+VALUES (1, 450.00, 110.00, 50.00, 25.00, 100.00, 20.00, 200.00, 25.00)
 ON CONFLICT (id) DO NOTHING;
 
 

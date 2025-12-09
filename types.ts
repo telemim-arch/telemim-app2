@@ -49,7 +49,7 @@ export interface Resident {
   name: string;
   seal?: string;
   phone: string;
-  
+
   originStreet: string;
   originNumber: string;
   originNeighborhood: string;
@@ -59,7 +59,7 @@ export interface Resident {
   destinationNumber: string;
   destinationNeighborhood: string;
   destinationCity: string;
-  
+
   notes?: string;
   totalMoves: number;
   lastMoveDate: string;
@@ -142,6 +142,8 @@ export interface FinancialSettings {
   helperAdditionalTrip: number; // V_AA
   supervisorDaily: number;   // V_SD
   lunchUnitCost: number;     // V_UA
+  vanDaily: number;          // V_VD
+  vanLunch: number;          // V_VL
 }
 
 export interface DailyOperationalRecord {
@@ -152,7 +154,7 @@ export interface DailyOperationalRecord {
   totalTrips: number;
   totalLunches: number;
   helperNames: string[];
-  
+
   // Calculated Costs Snapshot
   costTruck: number;
   costHelpers: number;

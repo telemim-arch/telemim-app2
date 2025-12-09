@@ -31,7 +31,7 @@ export default function App() {
 
   // NEW STATES
   const [financialSettings, setFinancialSettings] = useState<FinancialSettings>({
-    truckFirstTrip: 450, truckAdditionalTrip: 0, helperBase: 0, helperAdditionalTrip: 0, supervisorDaily: 0, lunchUnitCost: 0
+    truckFirstTrip: 450, truckAdditionalTrip: 0, helperBase: 0, helperAdditionalTrip: 0, supervisorDaily: 0, lunchUnitCost: 0, vanDaily: 0, vanLunch: 0
   });
   const [operationalRecords, setOperationalRecords] = useState<DailyOperationalRecord[]>([]);
 
