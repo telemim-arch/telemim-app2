@@ -782,8 +782,8 @@ const NotificationsView = ({ notifications, onMarkRead, onMarkAllRead }: { notif
 
 const LoginScreen = ({ onLogin, users }: { onLogin: (email: string, password: string) => void, users: User[] }) => {
   // Login Screen Component
-  const [email, setEmail] = useState('admin@telemim.com');
-  const [password, setPassword] = useState('123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
