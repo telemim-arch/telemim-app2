@@ -11,13 +11,16 @@ interface ResidentsManagerProps {
   onUpdateResident: (resident: Resident) => void;
   onDeleteResident: (id: string) => void;
   onAddMove: (move: MoveRequest) => void;
+  currentUserRole?: UserRole;
 }
 
 export const ResidentsManager: React.FC<ResidentsManagerProps> = ({
-  residents, employees, onAddResident, onUpdateResident, onDeleteResident, onAddMove
+  residents, employees, onAddResident, onUpdateResident, onDeleteResident, onAddMove, currentUserRole
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const canDelete = currentUserRole === UserRole.ADMIN || currentUserRole === UserRole.COORDINATOR;
   const [editingId, setEditingId] = useState<string | null>(null);
 
   // Sorting State
@@ -304,13 +307,15 @@ export const ResidentsManager: React.FC<ResidentsManagerProps> = ({
               >
                 <Edit size={14} />
               </button>
-              <button
-                onClick={() => handleDeleteClick(resident.id, resident.name)}
-                className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                title="Excluir"
-              >
-                <Trash2 size={14} />
-              </button>
+              {canDelete && (
+                <button
+                  onClick={() => handleDeleteClick(resident.id, resident.name)}
+                  className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                  title="Excluir"
+                >
+                  <Trash2 size={14} />
+                </button>
+              )}
             </div>
 
             {resident.seal && resident.seal !== 'S/N' && (

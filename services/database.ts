@@ -195,6 +195,10 @@ export const dbService = {
         if (error) throw error;
         return mapUser(data);
     },
+    async deleteUser(id: string) {
+        const { error } = await supabase.from('users').delete().eq('id', id);
+        if (error) throw error;
+    },
 
     // MOVES
     async createMove(move: MoveRequest) {

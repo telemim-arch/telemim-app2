@@ -315,7 +315,10 @@ export default function App() {
       await dbService.deleteResident(residentId);
       setResidents(prev => prev.filter(r => r.id !== residentId));
       if (user) addLog(user.id, user.name, 'Exclusão', `Morador removido ID: ${residentId}`);
-    } catch (err) { alert("Erro ao excluir morador."); }
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao excluir morador. Verifique se existem mudanças vinculadas a ele.");
+    }
   };
 
   const handleUpdateEmployee = async (updatedEmployee: User) => {
@@ -331,6 +334,17 @@ export default function App() {
         if (user) addLog(user.id, user.name, 'RH', `Novo funcionário contratado: ${created.name}`);
       }
     } catch (err) { alert("Erro ao salvar funcionário."); }
+  };
+
+  const handleDeleteEmployee = async (id: string) => {
+    try {
+      await dbService.deleteUser(id);
+      setEmployees(prev => prev.filter(e => e.id !== id));
+      if (user) addLog(user.id, user.name, 'RH', `Funcionário demitido/removido ID: ${id}`);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao excluir funcionário.");
+    }
   };
 
   const handleAddFinancialRecord = async (record: FinancialRecord) => {
@@ -504,6 +518,7 @@ export default function App() {
             onUpdateResident={handleUpdateResident}
             onDeleteResident={handleDeleteResident}
             onAddMove={handleAddMove}
+            currentUserRole={user.role}
           />
         ) : <AccessDenied />;
       case 'helpers':
@@ -522,7 +537,12 @@ export default function App() {
         ) : <AccessDenied />;
       case 'employees':
         return canAccessEmployees ? (
-          <EmployeesManager employees={employees} onUpdateEmployee={handleUpdateEmployee} currentUserRole={user.role} />
+          <EmployeesManager
+            employees={employees}
+            onUpdateEmployee={handleUpdateEmployee}
+            onDeleteEmployee={handleDeleteEmployee}
+            currentUserRole={user.role}
+          />
         ) : <AccessDenied />;
       case 'finance':
         return canAccessFinanceModule ? (
